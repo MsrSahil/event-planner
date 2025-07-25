@@ -3,33 +3,48 @@ dotenv.config();
 
 import express from "express";
 import morgan from "morgan";
+import cors from "cors";
 import connectDB from "./src/config/db.js";
 import AuthRouter from "./src/routes/authRoutes.js";
-
+import UserRouter from "./src/routes/userRoutes.js";
+import cookieParser from "cookie-parser";
+import cloudinary from "./src/config/cloudinary.js";
+import { handleContactForm } from "./src/controllers/contactController.js";
+import ContactUs from  "./src/routes/contacUsRoutes.js"
 const app = express();
 
-app.use(express.json());
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
+app.use(express.json());
+app.use(cookieParser());
 app.use(morgan("dev"));
 
 app.use("/auth", AuthRouter);
-
+app.use("/user", UserRouter);
+app.use("/contactUs", ContactUs);  
 app.get("/", (req, res) => {
-  res.json({ message: "server Connected" });
+  res.json({ message: "Server Connected" });
 });
 
-app.use((error, req, res, next) => {
-  const errorMessage = error.message || "Internal Server Error";
-  const errorCode = error.statusCode || 500;
-  res.status(errorCode).json({
-    success: false,
-    message: errorMessage,
-  });
+app.use((err, req, res, next) => {
+  const errorMessage = err.message || "Internal Server Error";
+  const errorCode = err.statusCode || 500;
+  res.status(errorCode).json({ message: errorMessage });
 });
 
-const port = process.env.port || 5000;
+const port = process.env.PORT || 5000;
 
-app.listen(port, () => {
-  console.log("sever stsart ho gya at", port);
-  connectDB();
+app.listen(port, async () => {
+  console.log("Server Started at", port);
+
+  try {
+    await connectDB();
+    await cloudinary.api.resources({ max_results: 1 });
+    console.log("Cloudinary Connected");
+
+
+  } catch (error) {
+    console.log(error);
+    process.exit(1);
+  }
 });

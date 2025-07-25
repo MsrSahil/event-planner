@@ -1,8 +1,14 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
+import { useAuth } from "../context/AuthContext";
 const Navbar = () => {
   const navigate = useNavigate();
+  const { user, isLogin, isAdmin } = useAuth();
+
+  const handleClick = () => {
+    isAdmin ? navigate("/adminpanel") : navigate("/dashboard");
+  };
 
   return (
     <>
@@ -14,14 +20,25 @@ const Navbar = () => {
           <img src={logo} alt="" className="h-[5em]" />
         </Link>
         <Link to={"/gallery"}>Gallery</Link>
-        <Link to={"/contact"}>Contact Us</Link>
-        <button
-          className="border p-3 rounded-md"
-          onClick={() => navigate("login")}
-        >
-          {" "}
-          Login to Plan your event{" "}
-        </button>
+        <Link to={"/contactUs"}>Contact Us</Link>
+        {isLogin ? (
+          <div className="flex gap-3 items-center cursor-pointer" onClick={handleClick}>
+            <img
+              src={user.photo}
+              alt="User Dp"
+              className="h-10 w-10 border rounded-full object-cover"
+            />
+            <span className="text-pink-500">{user.fullName}</span>
+          </div>
+        ) : (
+          <button
+            className="border p-3 rounded-md"
+            onClick={() => navigate("login")}
+          >
+            {" "}
+            Login to Plan your event{" "}
+          </button>
+        )}
       </div>
     </>
   );

@@ -1,21 +1,45 @@
 import React, { useState } from "react";
 import entrance from "../assets/entrance.jpg";
 import { useNavigate } from "react-router-dom";
+import api from "../config/api";
+import { toast } from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { user, setUser, isLogin, setIsLogin, isAdmin, setIsAdmin } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const formSubmitKro = (e) => {
+  const formSubmitKro = async (e) => {
     e.preventDefault();
     const logindata = {
-      Email: email,
-      Password: password,
+      email: email,
+      password: password,
+    };
+
+    try {
+      const res = await api.post("/auth/login", logindata);
+      toast.success(res.data.message);
+      setPassword("");
+      setEmail("");
+      setUser(res.data.data);
+      sessionStorage.setItem("EventUser",JSON.stringify(res.data.data));
+      setIsLogin(true);
+      res.data.data.role === "Admin"
+        ? (setIsAdmin(true), navigate("/adminpanel"))
+        : navigate("/dashboard");
+    } catch (error) {
+      toast.error(
+        `Error : ${error.response?.status || error.message} | ${
+          error.response?.data.message || ""
+        }`
+      );
+      console.log(error);
     }
     console.log(logindata);
-  }
+  };
 
   return (
     <>

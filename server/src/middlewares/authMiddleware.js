@@ -1,23 +1,30 @@
-export const sample = (req, res,next) => {
+import jwt from "jsonwebtoken";
+import User from "../models/userModel.js";
 
-    console.log("i am middleware named sample");
-    console.log(req.url);
-    console.log(req.method);
-    next(); // Call next middleware or route handler
-};
+export const Protect = async (req, res, next) => {
+  try {
+    const token = req.cookies.IDCard || "";
+    console.log(token);
 
-export const sample1 = (req, res,next) => {
+    if (!token) {
+      const error = new Error("Unauthorized !! Login Again");
+      error.statusCode = 401;
+      return next(error);
+    }
 
-    console.log("i am middleware named sample1");
-    console.log(req.url);
-    console.log(req.method);
-     next();
-};
+    const decode = await jwt.verify(token, process.env.JWT_SECRET);
 
-export const sample2 = (req, res,next) => {
+    const verifiedUser = await User.findById(decode.ID);
 
-    console.log("i am middleware named sample2");
-    console.log(req.url);
-    console.log(req.method);
-     next();
+    if (!verifiedUser) {
+      const error = new Error("Unauthorized !! Login Again");
+      error.statusCode = 401;
+      return next(error);
+    }
+
+    req.user = verifiedUser;
+    next();
+  } catch (error) {
+    next(error);
+  }
 };
