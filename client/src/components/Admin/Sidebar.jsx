@@ -1,9 +1,10 @@
 import React from "react";
 import {
   FaTachometerAlt,
-  FaUser,
+  FaBoxes,
+  FaUsers,
   FaCalendarCheck,
-  FaLifeRing,
+  FaQuestionCircle,
   FaCommentDots,
   FaSignOutAlt,
 } from "react-icons/fa";
@@ -12,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const Sidebar = ({ active, setActive }) => {
-  const { setUser, setIsLogin, setIsAdmin, user } = useAuth();
+  const { setUser, setIsLogin, setIsAdmin } = useAuth();
   const navigate = useNavigate();
   const handleLogout = async () => {
     const res = await api.get("/auth/logout");
@@ -29,7 +30,7 @@ const Sidebar = ({ active, setActive }) => {
         <div>
           <div className="border-b-2 border-indigo-200 pb-4 h-fit text-center">
             <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              {user.fullName.split(" ")[0]}'s Dashboard
+              Admin Dashboard
             </span>
           </div>
 
@@ -46,12 +47,21 @@ const Sidebar = ({ active, setActive }) => {
               </li>
               <li
                 className={`flex items-center gap-3 border border-gray-200 p-4 rounded-xl text-lg font-medium cursor-pointer transition-all duration-300 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-purple-500 hover:text-white hover:shadow-md hover:scale-105 ${
-                  active === "profile" &&
+                  active === "packages" &&
                   "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md scale-105"
                 }`}
-                onClick={() => setActive("profile")}
+                onClick={() => setActive("packages")}
               >
-                <FaUser className="text-xl" /> Profile
+                <FaBoxes className="text-xl" /> Packages
+              </li>
+              <li
+                className={`flex items-center gap-3 border border-gray-200 p-4 rounded-xl text-lg font-medium cursor-pointer transition-all duration-300 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-purple-500 hover:text-white hover:shadow-md hover:scale-105 ${
+                  active === "customers" &&
+                  "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md scale-105"
+                }`}
+                onClick={() => setActive("customers")}
+              >
+                <FaUsers className="text-xl" /> Customers
               </li>
               <li
                 className={`flex items-center gap-3 border border-gray-200 p-4 rounded-xl text-lg font-medium cursor-pointer transition-all duration-300 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-purple-500 hover:text-white hover:shadow-md hover:scale-105 ${
@@ -64,21 +74,21 @@ const Sidebar = ({ active, setActive }) => {
               </li>
               <li
                 className={`flex items-center gap-3 border border-gray-200 p-4 rounded-xl text-lg font-medium cursor-pointer transition-all duration-300 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-purple-500 hover:text-white hover:shadow-md hover:scale-105 ${
-                  active === "support" &&
+                  active === "cusQueries" &&
                   "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md scale-105"
                 }`}
-                onClick={() => setActive("support")}
+                onClick={() => setActive("cusQueries")}
               >
-                <FaLifeRing className="text-xl" /> Support
+                <FaQuestionCircle className="text-xl" /> Customer Queries
               </li>
               <li
                 className={`flex items-center gap-3 border border-gray-200 p-4 rounded-xl text-lg font-medium cursor-pointer transition-all duration-300 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-purple-500 hover:text-white hover:shadow-md hover:scale-105 ${
-                  active === "feedback" &&
+                  active === "cusFeedback" &&
                   "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md scale-105"
                 }`}
-                onClick={() => setActive("feedback")}
+                onClick={() => setActive("cusFeedback")}
               >
-                <FaCommentDots className="text-xl" /> Feedback
+                <FaCommentDots className="text-xl" /> Customer Feedback
               </li>
             </ul>
           </div>

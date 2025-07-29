@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import api from "../../config/api";
 import { FaUserEdit } from "react-icons/fa";
-import ProfileEditModal from "./profileEditModal";
-import AccountDeactivateModal from "./AccountDeactivateModal";
+import ProfileEditModal from "./modals/ProfileEditModal";
+import AccountDeactivateModal from "./modals/AccountDeactivateModal";
 import { useAuth } from "../../context/AuthContext";
 
 const Profile = () => {

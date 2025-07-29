@@ -9,7 +9,6 @@ import CustomerDashboard from "./pages/CustomerDashboard";
 import AdminPanel from "./pages/AdminPanel";
 import ContactUs from "./pages/ContactUs";
 
-
 const App = () => {
   return (
     <>
@@ -23,7 +22,7 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<CustomerDashboard />} />
           <Route path="/adminpanel" element={<AdminPanel />} />
-          <Route path="/contactUs" element={<ContactUs />} />
+          <Route path="/contact" element={<ContactUs />} />
         </Routes>
       </BrowserRouter>
     </>

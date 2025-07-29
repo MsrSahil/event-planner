@@ -24,7 +24,7 @@ const CustomerDashboard = () => {
     <>
       <div className="flex">
         <Sidebar active={active} setActive={setActive} />
-        <div className="border w-full">
+        <div className=" w-full">
           {active === "overview" && <Overview />}
           {active === "profile" && <Profile />}
           {active === "bookings" && <Bookings />}
