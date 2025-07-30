@@ -31,7 +31,7 @@ export const RegisterUser = async (req, res, next) => {
       existingUser.password = hashedPassword;
       existingUser.status = "Active";
       existingUser.photo = profilePic;
-      existingUser.role = "User";
+      existingUser.role = "User"
       await existingUser.save();
     } else {
       const newUser = await User.create({
@@ -158,18 +158,15 @@ export const deleteUser = async (req, res, next) => {
 
     console.log(currentUser);
 
-    console.log(reason, feedback, confirmPassword, currentUser.password);
-
+    console.log(reason, feedback, confirmPassword , currentUser.password);
+    
     if (!currentUser) {
       const error = new Error("User Not Found !! Login Again");
       error.statusCode = 401;
       return next(error);
     }
 
-    const isVerified = await bcrypt.compare(
-      confirmPassword,
-      currentUser.password
-    );
+     const isVerified = await bcrypt.compare(confirmPassword, currentUser.password);
 
     if (!isVerified) {
       const error = new Error("Invalid Username or Password");
@@ -189,7 +186,7 @@ export const deleteUser = async (req, res, next) => {
         representing: "N/A",
         photo: "N/A",
         role: "N/A",
-        password: "N/A",
+        password:"N/A",
         status: "Inactive",
       },
       { new: true }
@@ -202,4 +199,3 @@ export const deleteUser = async (req, res, next) => {
     next(error);
   }
 };
-

@@ -10,7 +10,7 @@ const seedAdmin = async () => {
 
   const adminPassword = await bcrypt.hash("Admin@123", 10);
   const AdminUser = {
-    name: "Admin User",
+    fullName: "Admin User",
     email: "admin@mywebsite.com",
     password: adminPassword,
     phone: "9431897901",

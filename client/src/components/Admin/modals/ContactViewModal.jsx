@@ -1,7 +1,13 @@
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import { FaClock, FaCheckCircle, FaExclamationCircle, FaPaperPlane, FaEdit } from "react-icons/fa";
+import {
+  FaClock,
+  FaCheckCircle,
+  FaExclamationCircle,
+  FaPaperPlane,
+  FaEdit,
+} from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
 import api from "../../../config/api";
 import toast from "react-hot-toast";
@@ -14,11 +20,12 @@ const ContactViewModal = ({ isOpen, onClose, Query }) => {
     message: "",
     phone: "",
     status: "Pending",
+    reply: "",
   });
 
   const [updateData, setUpdateData] = useState({
     status: "",
-    reply: ""
+    reply: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -43,16 +50,20 @@ const ContactViewModal = ({ isOpen, onClose, Query }) => {
       setQuery(Query);
       setUpdateData({
         status: Query.status || "Pending",
-        reply: ""
+        reply: Query.reply || "",
       });
     }
   }, [Query, isOpen]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setUpdateData(prev => ({
+    setUpdateData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
+    }));
+    setQuery((prev) => ({
+      ...prev,
+      [name]: value,
     }));
   };
 
@@ -66,11 +77,11 @@ const ContactViewModal = ({ isOpen, onClose, Query }) => {
     try {
       const res = await api.put(`/admin/contacts/${query._id}`, {
         status: updateData.status,
-        reply: updateData.reply
+        reply: updateData.reply,
       });
-      
+
       toast.success("Query updated successfully");
-      setQuery(prev => ({ ...prev, status: updateData.status }));
+      setQuery((prev) => ({ ...prev, status: updateData.status }));
       onClose();
     } catch (error) {
       toast.error(
@@ -89,7 +100,7 @@ const ContactViewModal = ({ isOpen, onClose, Query }) => {
 
   return (
     <>
-      <div 
+      <div
         className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm top-20"
         onClick={onClose}
       >
@@ -112,7 +123,8 @@ const ContactViewModal = ({ isOpen, onClose, Query }) => {
               <div className="flex items-center gap-3">
                 <span
                   className={`px-4 py-2 rounded-full text-sm font-medium border-2 ${
-                    statusConfig[query?.status]?.color || statusConfig.Pending.color
+                    statusConfig[query?.status]?.color ||
+                    statusConfig.Pending.color
                   } bg-white`}
                 >
                   <Icon className="inline mr-2" />
@@ -137,9 +149,11 @@ const ContactViewModal = ({ isOpen, onClose, Query }) => {
                   <label className="block text-sm font-semibold text-gray-600 mb-1">
                     Customer Name
                   </label>
-                  <p className="text-lg font-medium text-gray-900">{query.name}</p>
+                  <p className="text-lg font-medium text-gray-900">
+                    {query.name}
+                  </p>
                 </div>
-                
+
                 <div className="bg-gray-50 rounded-lg p-4">
                   <label className="block text-sm font-semibold text-gray-600 mb-1">
                     Email Address
@@ -155,7 +169,7 @@ const ContactViewModal = ({ isOpen, onClose, Query }) => {
                   </label>
                   <p className="text-gray-900">{query.phone}</p>
                 </div>
-                
+
                 <div className="bg-gray-50 rounded-lg p-4">
                   <label className="block text-sm font-semibold text-gray-600 mb-1">
                     Subject
@@ -181,37 +195,38 @@ const ContactViewModal = ({ isOpen, onClose, Query }) => {
                 <FaEdit className="text-indigo-600" />
                 Admin Response
               </h4>
-              
+
               <div className="space-y-4">
                 {/* Status Update */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Update Status
                   </label>
-                  <select 
+                  <select
                     name="status"
                     value={updateData.status}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
+                    disabled={Query.status !== "Pending"}
                   >
                     <option value="Pending">🟡 Pending</option>
                     <option value="Resolved">🟢 Resolved</option>
                     <option value="Rejected">🔴 Rejected</option>
                   </select>
                 </div>
-
                 {/* Reply Message */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Reply Message *
                   </label>
-                  <textarea 
+                  <textarea
                     name="reply"
                     value={updateData.reply}
                     onChange={handleInputChange}
                     placeholder="Write your response to the customer..."
                     rows="4"
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all resize-none"
+                    disabled={Query.status !== "Pending"}
                   />
                 </div>
 
@@ -225,7 +240,11 @@ const ContactViewModal = ({ isOpen, onClose, Query }) => {
                   </button>
                   <button
                     onClick={handleUpdateQuery}
-                    disabled={loading || !updateData.reply.trim()}
+                    disabled={
+                      loading ||
+                      !updateData.reply.trim() ||
+                      Query.status !== "Pending"
+                    }
                     className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium flex items-center justify-center gap-2"
                   >
                     {loading ? (

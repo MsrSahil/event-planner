@@ -16,7 +16,6 @@ import {
   FaExclamationCircle,
 } from "react-icons/fa";
 import ContactViewModal from "./modals/ContactViewModal";
-import { IoSettings } from "react-icons/io5";
 
 const CustomerQueries = () => {
   const [queries, setQueries] = useState([]);
@@ -91,11 +90,11 @@ const CustomerQueries = () => {
     setIsContactViewModalOpen(true);
   };
 
-  const handleStatusEdit = (query) => {};
+  //const handleStatusEdit = (query) => {};
 
   useEffect(() => {
     fetchAllCoustomerQueries();
-  }, []);
+  }, [isContactViewModalOpen]);
 
   if (loading) {
     return (
@@ -107,7 +106,7 @@ const CustomerQueries = () => {
 
   return (
     <>
-      <div className="bg-gray-50 min-h-screen p-6">
+      <div className="bg-gray-50 min-h-[87vh] p-6 overflow-y-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
