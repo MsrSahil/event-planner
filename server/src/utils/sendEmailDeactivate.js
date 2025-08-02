@@ -1,8 +1,8 @@
 import nodemailer from "nodemailer";
 
-const sendEmail = async (to, subject, mailBody) => {
+
+const sendEmailDeactivate = async (to,mailBody) => {
   try {
-    
     const Truck = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -14,7 +14,6 @@ const sendEmail = async (to, subject, mailBody) => {
     const mailOptions = {
       from: process.env.GMAIL_USER,
       to,
-      subject,
       html: mailBody,
     };
 
@@ -29,8 +28,4 @@ const sendEmail = async (to, subject, mailBody) => {
 };
 
 
-export default sendEmail;
-
-
-
-
+export default sendEmailDeactivate;
