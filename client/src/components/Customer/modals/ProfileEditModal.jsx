@@ -115,7 +115,7 @@ const ProfileEditModal = ({ isOpen, onClose, oldData }) => {
     <>
       <div className="inset-0 fixed bg-black/70 flex justify-center items-center">
         <div
-          className={`border w-1/2 max-h-7/10 mt-10 bg-white rounded-lg overflow-y-auto`}
+          className={`border w-1/2 max-h-7/10 mt-10 bg-white rounded-lg overflow-y-auto scrollbar-hide`}
         >
           <div className="text-xl flex justify-between p-3 border-b-2 sticky top-0 bg-white z-10">
             <h1 className="font-bold">Edit Profile</h1>

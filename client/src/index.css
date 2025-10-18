@@ -4,3 +4,13 @@
 @theme {
   --customFont: "Bonheur Royale", cursive, san-serif;
 }
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+
+.scrollbar-hide::-webkit-scrollbar{
+  display: none;
+}

@@ -62,7 +62,7 @@ const AccountDeactivateModal = ({ isOpen, onClose }) => {
     <>
       <div className="inset-0 fixed bg-black/70 flex justify-center items-center z-50">
         <div
-          className={`border w-2/3 max-w-2xl max-h-[80vh] mt-10 bg-white rounded-xl shadow-2xl overflow-y-auto`}
+          className={`border w-2/3 max-w-2xl max-h-[80vh] mt-15 bg-white rounded-xl shadow-2xl overflow-y-auto scrollbar-hide`}
         >
           <div className="text-xl flex justify-between p-6 border-b-2 border-red-200 sticky top-0 bg-white z-10">
             <h1 className="font-bold text-red-600 text-2xl">

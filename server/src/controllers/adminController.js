@@ -1,6 +1,47 @@
 import { response } from "express";
 import Contact from "../models/contactModel.js";
 import sendEmail from "../utils/sendEmail.js";
+import cloudinary from "../config/cloudinary.js";
+import Banquet from "../models/BanquetMondel.js";
+
+const UploadMultipleToCloudinary = async (Images) => {
+  // const UploadMultipleToCloudinary = (Images) => {
+  //   const ImageUrls = [];
+  //   Images.forEach(async (image) => {
+  //     const b64 = Buffer.from(image.buffer).toString("base64");
+  //     const dataURI = `data:${image.mimetype};base64,${b64}`;
+
+  //     const result = await cloudinary.uploader.upload(dataURI, {
+  //       folder: "EventManagement",
+  //       width: 500,
+  //       height: 500,
+  //       crop: "fill",
+  //     });
+
+  //     ImageUrls.push(result.secure_url);
+  //   });
+
+  //   return ImageUrls;
+  // };
+
+  const uploadPromises = Images.map(async (image) => {
+    const b64 = Buffer.from(image.buffer).toString("base64");
+    const dataURI = `data:${image.mimetype};base64,${b64}`;
+
+    const result = await cloudinary.uploader.upload(dataURI, {
+      folder: "EventManagement",
+      width: 500,
+      height: 500,
+      crop: "fill",
+    });
+
+    return result.secure_url;
+  });
+
+  const ImageUrls = await Promise.all(uploadPromises);
+
+  return ImageUrls;
+};
 
 export const GetAllContacts = async (req, res, next) => {
   try {
@@ -72,9 +113,72 @@ export const UpdateContacts = async (req, res, next) => {
   </div>
     `;
 
-    await sendEmail(updatedQuery.email, updatedQuery.subject, mailBody);
+    const MailStatus = await sendEmail(
+      updatedQuery.email,
+      updatedQuery.subject,
+      mailBody
+    );
+
+    if (!MailStatus) {
+      console.log("Error Sending Email");
+    }
 
     res.status(200).json({ message: "Contact Updated", data: updatedQuery });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const AddNewBanquetHall = async (req, res, next) => {
+  try {
+    const {
+      hallName,
+      address,
+      capacity,
+      managerName,
+      contactNumber,
+      email,
+      rent,
+      minBookingAmount,
+      featureDescription,
+    } = req.body;
+
+    const imageFiles = req.files;
+    const photos = await UploadMultipleToCloudinary(imageFiles);
+    console.log(photos);
+    if (photos.length <= 0) {
+      const error = new Error("Fail to Upload Photos");
+      error.statusCode = 502;
+      return next(error);
+    }
+    const NewBanquetHall = await Banquet.create({
+      hallName,
+      address,
+      capacity,
+      managerName,
+      contactNumber,
+      email,
+      rent,
+      minBookingAmount,
+      featureDescription,
+      photos,
+    });
+
+    res
+      .status(200)
+      .json({ message: "Banquet Hall Added", data: NewBanquetHall });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const GetAllBanquetHalls = async (req, res, next) => {
+  try {
+    const AllBanquetHalls = (await Banquet.find()) || "";
+
+    res
+      .status(200)
+      .json({ message: "All Data Fetched", data: AllBanquetHalls });
   } catch (error) {
     next(error);
   }
