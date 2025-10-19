@@ -1,8 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Bonheur+Royale&family=Cedarville+Cursive&family=Poppins:wght@400;500;600&display=swap");
 @import "tailwindcss";
 
-@theme {
-  --customFont: "Bonheur Royale", cursive, san-serif;
+:root {
+  --customFont: "Bonheur Royale", cursive, sans-serif;
 }
 
 .scrollbar-hide {
@@ -13,4 +13,15 @@
 
 .scrollbar-hide::-webkit-scrollbar{
   display: none;
+}
+
+/* Global focus visible style for keyboard users */
+:focus-visible {
+  outline: 3px solid rgba(99, 102, 241, 0.6);
+  outline-offset: 2px;
+}
+
+/* Improve font fallbacks */
+html, body {
+  font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 }
