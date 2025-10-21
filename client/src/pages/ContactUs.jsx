@@ -19,6 +19,8 @@ const ContactUs = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,10 +32,21 @@ const ContactUs = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // client-side validation
+    const nextErrors = {};
+    if (!contactData.name.trim()) nextErrors.name = "Name is required";
+    if (!/^[\w-.]+@[\w-]+\.[a-z]{2,}$/i.test(contactData.email)) nextErrors.email = "Enter a valid email";
+    if (!contactData.phone.trim()) nextErrors.phone = "Phone number required";
+    if (!contactData.message.trim()) nextErrors.message = "Message cannot be empty";
+
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
+
     setLoading(true);
     try {
       const res = await api.post("/public/contactus", contactData);
       toast.success(res.data.message);
+      setSuccess(res.data.message || "Message sent successfully");
       setContactData({
         name: "",
         email: "",
@@ -148,6 +161,7 @@ const ContactUs = () => {
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all duration-300"
                     placeholder="Your full name"
                   />
+                  {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
                 </div>
 
                 <div>
@@ -168,6 +182,7 @@ const ContactUs = () => {
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all duration-300"
                     placeholder="your@email.com"
                   />
+                  {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
                 </div>
               </div>
 
@@ -189,6 +204,7 @@ const ContactUs = () => {
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all duration-300"
                   placeholder="(123) 456-7890"
                 />
+                {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
               </div>
 
               <div>
@@ -209,6 +225,7 @@ const ContactUs = () => {
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all duration-300"
                   placeholder="What's this about?"
                 />
+                {errors.subject && <p className="text-sm text-red-500 mt-1">{errors.subject}</p>}
               </div>
 
               <div>
@@ -229,9 +246,17 @@ const ContactUs = () => {
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all duration-300 resize-none"
                   placeholder="Tell us about your event or ask any questions..."
                 />
+                {errors.message && <p className="text-sm text-red-500 mt-1">{errors.message}</p>}
               </div>
 
-              <button
+              <div>
+                {success && (
+                  <div className="mb-4 px-4 py-3 rounded-lg bg-emerald-50 border border-emerald-100 text-emerald-700">
+                    {success}
+                  </div>
+                )}
+
+                <button
                 type="submit"
                 disabled={loading}
                 className="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center space-x-2"
@@ -248,6 +273,7 @@ const ContactUs = () => {
                   </>
                 )}
               </button>
+                </div>
             </form>
 
             {/* Additional Info */}
