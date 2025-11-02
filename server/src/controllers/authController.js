@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
+import cloudinary from "../config/cloudinary.js";
 import genToken from "../utils/auth.js";
 import Deactivation from "../models/deactivationModel.js";
 

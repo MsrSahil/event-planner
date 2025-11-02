@@ -14,11 +14,10 @@ const Bookings = () => {
     const fetchBookings = async () => {
       setLoading(true);
       try {
-        // The server exposes user profile at GET /user/profile — bookings (if any)
-        // are expected to live on the returned user object. Adjusted to match server.
-        const res = await api.get("/user/profile");
-        // res.data.data is the current user object from server
-        setBookings(res.data?.data?.bookings || []);
+  // Use the dedicated bookings endpoint implemented on the server
+  const res = await api.get("/user/bookings");
+  // res.data.data is the bookings array
+  setBookings(res.data?.data || []);
       } catch (err) {
         // if endpoint not available you'll see an error here
         toast.error(err.response?.data?.message || err.message || "Failed to load bookings");
@@ -32,14 +31,13 @@ const Bookings = () => {
 
   const cancelBooking = async (id) => {
     if (!confirm("Are you sure you want to cancel this booking?")) return;
-    // The backend currently doesn't expose a dedicated booking-cancel endpoint.
-    // We'll optimistically mark the booking as cancelled locally and inform the user.
-    // If you add a cancel endpoint to the server later, replace this with the API call.
+    // Call the server cancel endpoint and update UI from the response.
     setActionLoading(id);
     try {
-      // local optimistic update
-      setBookings((prev) => prev.map((b) => (b._id === id ? { ...b, status: "Cancelled" } : b)));
-      toast.success("Booking marked as Cancelled locally (server-side cancel not implemented)");
+      const res = await api.put(`/user/bookings/${id}/cancel`);
+      toast.success(res.data?.message || "Booking cancelled");
+      const updated = res.data?.data;
+      setBookings((prev) => prev.map((b) => (b._id === id ? updated : b)));
     } catch (err) {
       toast.error(err.response?.data?.message || err.message || "Failed to cancel booking");
     } finally {
