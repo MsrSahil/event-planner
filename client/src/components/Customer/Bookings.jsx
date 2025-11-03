@@ -3,6 +3,7 @@ import api from "../../config/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 import BookingDetailModal from "./BookingDetailModal";
+import BookingCreateModal from "./BookingCreateModal";
 
 const Bookings = () => {
   const { user } = useAuth();
@@ -47,6 +48,7 @@ const Bookings = () => {
 
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const openDetail = (booking) => {
     setSelectedBooking(booking);
@@ -58,11 +60,21 @@ const Bookings = () => {
     setSelectedBooking(null);
   };
 
+  const openCreate = () => setCreateOpen(true);
+  const closeCreate = () => setCreateOpen(false);
+
+  const handleCreated = (booking) => {
+    setBookings((prev) => [booking, ...prev]);
+  };
+
   return (
     <div className="py-10 px-4 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">Your Bookings</h1>
-        <div className="text-sm text-gray-600">{user?.fullName ? `Hi, ${user.fullName.split(" ")[0]}` : ""}</div>
+        <div className="flex items-center gap-3">
+          <button onClick={openCreate} className="px-3 py-2 rounded-md bg-emerald-600 text-white text-sm">New Booking</button>
+          <div className="text-sm text-gray-600">{user?.fullName ? `Hi, ${user.fullName.split(" ")[0]}` : ""}</div>
+        </div>
       </div>
 
       {loading ? (
@@ -99,6 +111,7 @@ const Bookings = () => {
         </div>
       )}
       <BookingDetailModal open={detailOpen} onClose={closeDetail} booking={selectedBooking} />
+      <BookingCreateModal open={createOpen} onClose={closeCreate} onCreated={handleCreated} />
     </div>
   );
 };

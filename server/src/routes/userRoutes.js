@@ -1,5 +1,5 @@
 import express from "express";
-import { GetProfile, GetBookings, CancelBooking } from "../controllers/userController.js";
+import { GetProfile, GetBookings, CancelBooking, CreateBooking } from "../controllers/userController.js";
 
 import { Protect } from "../middlewares/authMiddleware.js";
 import multer from "multer";
@@ -12,6 +12,8 @@ const router = express.Router();
 router.get("/profile", Protect, GetProfile);
 
 router.get("/bookings", Protect, GetBookings);
+
+router.post("/bookings", Protect, CreateBooking);
 
 router.put("/bookings/:id/cancel", Protect, CancelBooking);
 
