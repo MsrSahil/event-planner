@@ -4,6 +4,7 @@ import {
   UpdateContacts,
   AddNewBanquetHall,
   GetAllBanquetHalls,
+  UpsertBookingByAdmin,
 } from "../controllers/adminController.js";
 import { isAdmin, Protect } from "../middlewares/authMiddleware.js";
 import multer from "multer";
@@ -24,5 +25,8 @@ router.post(
 );
 
 router.get("/banquetHalls", Protect, isAdmin, GetAllBanquetHalls);
+
+// Admin: create or update bookings
+router.post("/bookings", Protect, isAdmin, UpsertBookingByAdmin);
 
 export default router;

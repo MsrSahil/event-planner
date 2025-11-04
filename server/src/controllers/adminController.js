@@ -3,6 +3,9 @@ import Contact from "../models/contactModel.js";
 import sendEmail from "../utils/sendEmail.js";
 import cloudinary from "../config/cloudinary.js";
 import Banquet from "../models/BanquetMondel.js";
+import Booking from "../models/bookingModel.js";
+import User from "../models/userModel.js";
+
 
 const UploadMultipleToCloudinary = async (Images) => {
   // const UploadMultipleToCloudinary = (Images) => {
@@ -179,6 +182,93 @@ export const GetAllBanquetHalls = async (req, res, next) => {
     res
       .status(200)
       .json({ message: "All Data Fetched", data: AllBanquetHalls });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const UpsertBookingByAdmin = async (req, res, next) => {
+  try {
+    const {
+      id,
+      userId,
+      hallName,
+      title,
+      date,
+      amount,
+      status,
+      notes,
+    } = req.body;
+
+    // If id provided -> update existing booking
+    if (id) {
+      const existing = await Booking.findById(id);
+      if (!existing) {
+        const error = new Error("Booking not found");
+        error.statusCode = 404;
+        return next(error);
+      }
+
+      // update fields selectively
+      existing.hallName = hallName ?? existing.hallName;
+      existing.title = title ?? existing.title;
+      existing.date = date ? new Date(date) : existing.date;
+      existing.amount = amount !== undefined ? Number(amount) : existing.amount;
+      existing.status = status ?? existing.status;
+      existing.notes = notes ?? existing.notes;
+
+      await existing.save();
+
+      // notify user
+      try {
+        const bookingUser = await User.findById(existing.user);
+        if (bookingUser) {
+          const mailBody = `<p>Hi ${bookingUser.fullName},</p>
+            <p>Your booking <strong>${existing.hallName}</strong> has been updated by admin. Status: <strong>${existing.status}</strong></p>`;
+          sendEmail(bookingUser.email, "Your booking was updated", mailBody).catch((e) => console.error(e));
+        }
+      } catch (e) {
+        console.error("Failed to send booking update email", e);
+      }
+
+      return res.status(200).json({ message: "Booking updated", data: existing });
+    }
+
+    // Create new booking - require userId
+    if (!userId) {
+      const error = new Error("userId is required to create a booking");
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      const error = new Error("User not found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    const newBooking = await Booking.create({
+      user: user._id,
+      hallName,
+      title,
+      date: date ? new Date(date) : undefined,
+      amount: amount ? Number(amount) : undefined,
+      status: status || "Pending",
+      notes,
+    });
+
+    // Notify user
+    try {
+      const mailBody = `<p>Hi ${user.fullName},</p>
+        <p>An admin has created a booking for you: <strong>${newBooking.hallName}</strong> on <strong>${newBooking.date?.toLocaleString() || "-"}</strong>.</p>
+        <p>Booking ID: ${newBooking._id}</p>`;
+      sendEmail(user.email, "New booking created for you", mailBody).catch((e) => console.error(e));
+    } catch (e) {
+      console.error("Failed to send booking created email", e);
+    }
+
+    res.status(201).json({ message: "Booking created", data: newBooking });
   } catch (error) {
     next(error);
   }
