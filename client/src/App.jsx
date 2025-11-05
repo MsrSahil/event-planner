@@ -1,31 +1,61 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import Navbar from "./components/Navbar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
 import { Toaster } from "react-hot-toast";
-import CustomerDashboard from "./pages/CustomerDashboard";
-import AdminPanel from "./pages/AdminPanel";
-import ContactUs from "./pages/ContactUs";
+import ScrollToTop from "./components/ScrollToTop";
+import ErrorBoundary from "./components/ErrorBoundary";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
+
+const Home = lazy(() => import("./pages/Home"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const CustomerDashboard = lazy(() => import("./pages/CustomerDashboard"));
+const AdminPanel = lazy(() => import("./pages/AdminPanel"));
+const ContactUs = lazy(() => import("./pages/ContactUs"));
+const NotFound = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <div className="text-center">
+      <h2 className="text-2xl font-semibold">404 — Not found</h2>
+      <p className="text-gray-600">We couldn't find the page you were looking for.</p>
+    </div>
+  </div>
+);
 
 const App = () => {
   return (
-    <>
+    <ErrorBoundary>
       <BrowserRouter>
-        <Toaster />
+        <ScrollToTop />
+        <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
+        <a href="#main" className="sr-only focus:not-sr-only p-2">Skip to content</a>
         <Navbar />
 
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<CustomerDashboard />} />
-          <Route path="/adminpanel" element={<AdminPanel />} />
-          <Route path="/contact" element={<ContactUs />} />
-        </Routes>
+        <Suspense fallback={<div className="py-24 text-center">Loading...</div>}>
+          <main id="main">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+
+              <Route
+                path="/dashboard"
+                element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>}
+              />
+
+              <Route
+                path="/adminpanel"
+                element={<AdminRoute><AdminPanel /></AdminRoute>}
+              />
+
+              <Route path="/contact" element={<ContactUs />} />
+
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+        </Suspense>
       </BrowserRouter>
-    </>
+    </ErrorBoundary>
   );
 };
 
