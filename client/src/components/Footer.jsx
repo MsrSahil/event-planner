@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -11,9 +12,9 @@ const Footer = () => {
 
         <div className="flex items-center gap-6">
           <nav className="flex gap-4">
-            <a href="/" className="text-sm text-gray-600 hover:text-gray-900">Home</a>
-            <a href="/contact" className="text-sm text-gray-600 hover:text-gray-900">Contact</a>
-            <a href="/dashboard" className="text-sm text-gray-600 hover:text-gray-900">Dashboard</a>
+            <Link to="/" className="text-sm text-gray-600 hover:text-gray-900">Home</Link>
+            <Link to="/contact" className="text-sm text-gray-600 hover:text-gray-900">Contact</Link>
+            <Link to="/dashboard" className="text-sm text-gray-600 hover:text-gray-900">Dashboard</Link>
           </nav>
 
           <div className="text-sm text-gray-500">© {new Date().getFullYear()} Festive Flair. All rights reserved.</div>
