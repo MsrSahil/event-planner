@@ -14,6 +14,10 @@ const Register = lazy(() => import("./pages/Register"));
 const CustomerDashboard = lazy(() => import("./pages/CustomerDashboard"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 const ContactUs = lazy(() => import("./pages/ContactUs"));
+const About = lazy(() => import("./pages/About"));
+const Services = lazy(() => import("./pages/Services"));
+const Stories = lazy(() => import("./pages/Stories"));
+const Gallery = lazy(() => import("./pages/Gallery"));
 const NotFound = () => (
   <div className="min-h-screen flex items-center justify-center">
     <div className="text-center">
@@ -38,6 +42,10 @@ const App = () => {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/stories" element={<Stories />} />
+              <Route path="/gallery" element={<Gallery />} />
 
               <Route
                 path="/dashboard"
