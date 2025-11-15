@@ -1,4 +1,3 @@
-import cloudinary from "../config/cloudinary.js";
 import User from "../models/userModel.js";
 import Booking from "../models/bookingModel.js";
 import sendEmail from "../utils/sendEmail.js";
@@ -91,22 +90,46 @@ export const CreateBooking = async (req, res, next) => {
       return next(error);
     }
 
-    const booking = await Booking.create({
+    const timestamp = Date.parse(date);
+    if (isNaN(timestamp)) {
+      const error = new Error("Invalid date format");
+      error.statusCode = 400;
+      return next(error);
+    }
+    const parsedDate = new Date(timestamp);
+
+    let parsedAmount;
+    if (amount !== undefined && amount !== null && amount !== "") {
+      parsedAmount = Number(amount);
+      if (Number.isNaN(parsedAmount)) {
+        const error = new Error("Invalid amount value");
+        error.statusCode = 400;
+        return next(error);
+      }
+    }
+
+    const bookingData = {
       user: currentUser._id,
       hallName,
       title,
-      date: new Date(date),
-      amount: amount ? Number(amount) : undefined,
+      date: parsedDate,
       notes,
-    });
+    };
+    if (parsedAmount !== undefined) bookingData.amount = parsedAmount;
 
-    // send a simple notification email to user
+    const booking = await Booking.create(bookingData);
+
+    // send a simple notification email to user (non-fatal)
     const emailBody = `<p>Hi ${currentUser.fullName},</p>
-      <p>Your booking for <strong>${hallName}</strong> on <strong>${new Date(date).toLocaleString()}</strong> has been received.</p>
+      <p>Your booking for <strong>${hallName}</strong> on <strong>${parsedDate.toLocaleString()}</strong> has been received.</p>
       <p>Booking ID: ${booking._id}</p>
     `;
 
-    sendEmail(currentUser.email, "Booking Received", emailBody).catch((e) => console.error(e));
+    try {
+      await sendEmail(currentUser.email, "Booking Received", emailBody);
+    } catch (e) {
+      console.error("Failed to send booking email:", e);
+    }
 
     res.status(201).json({ message: "Booking created", data: booking });
   } catch (error) {
