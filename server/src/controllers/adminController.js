@@ -225,6 +225,38 @@ export const AddCatering = async (req, res, next) => {
       menu,
     } = req.body;
 
+    // basic validation
+    if (!catererName || !phone) {
+      const error = new Error("catererName and phone are required");
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    // parse plans/menu safely (accept arrays or JSON strings)
+    let parsedPlans = [];
+    if (plans) {
+      if (Array.isArray(plans)) parsedPlans = plans;
+      else {
+        try {
+          parsedPlans = JSON.parse(plans);
+        } catch (e) {
+          parsedPlans = [];
+        }
+      }
+    }
+
+    let parsedMenu = [];
+    if (menu) {
+      if (Array.isArray(menu)) parsedMenu = menu;
+      else {
+        try {
+          parsedMenu = JSON.parse(menu);
+        } catch (e) {
+          parsedMenu = [];
+        }
+      }
+    }
+
     const created = await Caterer.create({
       catererName,
       phone,
@@ -234,8 +266,8 @@ export const AddCatering = async (req, res, next) => {
       perPlateNonVeg,
       details,
       status: status || "Active",
-      plans: Array.isArray(plans) ? plans : plans ? JSON.parse(plans) : [],
-      menu: Array.isArray(menu) ? menu : menu ? JSON.parse(menu) : [],
+      plans: parsedPlans,
+      menu: parsedMenu,
     });
 
     res.status(201).json({ message: "Catering created", data: created });
@@ -257,11 +289,29 @@ export const UpdateCatering = async (req, res, next) => {
     const updates = req.body || {};
     // Handle plans/menu which may be sent as JSON strings from form-data
     if (updates.plans) {
-      existing.plans = Array.isArray(updates.plans) ? updates.plans : JSON.parse(updates.plans);
+      if (Array.isArray(updates.plans)) existing.plans = updates.plans;
+      else {
+        try {
+          existing.plans = JSON.parse(updates.plans);
+        } catch (e) {
+          const error = new Error("Invalid plans format");
+          error.statusCode = 400;
+          return next(error);
+        }
+      }
       delete updates.plans;
     }
     if (updates.menu) {
-      existing.menu = Array.isArray(updates.menu) ? updates.menu : JSON.parse(updates.menu);
+      if (Array.isArray(updates.menu)) existing.menu = updates.menu;
+      else {
+        try {
+          existing.menu = JSON.parse(updates.menu);
+        } catch (e) {
+          const error = new Error("Invalid menu format");
+          error.statusCode = 400;
+          return next(error);
+        }
+      }
       delete updates.menu;
     }
 

@@ -58,7 +58,7 @@ const CateringSchema = mongoose.Schema(
       default: "Active",
     },
   },
-  { timeStamps: true }
+  { timestamps: true }
 );
 
 const Caterer = mongoose.model("Caterer", CateringSchema);

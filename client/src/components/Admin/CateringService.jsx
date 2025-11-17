@@ -29,7 +29,11 @@ const CateringService = () => {
   const filtered = useMemo(() => {
     if (!query) return items;
     const q = query.toLowerCase();
-    return items.filter((it) => (it.name || "").toLowerCase().includes(q) || (it.description || "").toLowerCase().includes(q));
+    return items.filter((it) => {
+      const name = (it.catererName || "").toLowerCase();
+      const details = (it.details || "").toLowerCase();
+      return name.includes(q) || details.includes(q);
+    });
   }, [items, query]);
 
   const handleDelete = async (id) => {
@@ -127,9 +131,16 @@ const CateringService = () => {
             <tbody>
               {filtered.map((it) => (
                 <tr key={it._id} className="border-b hover:bg-gray-50">
-                  <td className="py-3 px-2">{it.name}</td>
-                  <td className="py-3 px-2">{it.price ?? "-"}</td>
-                  <td className="py-3 px-2 text-sm text-gray-600">{it.description || "-"}</td>
+                  <td className="py-3 px-2">
+                    <div className="font-medium">{it.catererName || "-"}</div>
+                    <div className="text-xs text-gray-500">{it.phone || "-"}</div>
+                  </td>
+                  <td className="py-3 px-2 text-sm">{it.bookingCharge || "-"}</td>
+                  <td className="py-3 px-2 text-sm">
+                    <div className="text-xs">Veg: {it.perPlateVeg || '-'}</div>
+                    <div className="text-xs">Jain: {it.perPlateJain || '-'}</div>
+                    <div className="text-xs">NonVeg: {it.perPlateNonVeg || '-'}</div>
+                  </td>
                   <td className="py-3 px-2">
                     <div className="flex items-center gap-2">
                       <button onClick={() => toast('Edit not implemented yet')} className="px-2 py-1 bg-yellow-500 text-white rounded text-xs">Edit</button>
