@@ -221,6 +221,8 @@ export const AddCatering = async (req, res, next) => {
       perPlateNonVeg,
       details,
       status,
+      plans,
+      menu,
     } = req.body;
 
     const created = await Caterer.create({
@@ -232,6 +234,8 @@ export const AddCatering = async (req, res, next) => {
       perPlateNonVeg,
       details,
       status: status || "Active",
+      plans: Array.isArray(plans) ? plans : plans ? JSON.parse(plans) : [],
+      menu: Array.isArray(menu) ? menu : menu ? JSON.parse(menu) : [],
     });
 
     res.status(201).json({ message: "Catering created", data: created });
@@ -251,6 +255,16 @@ export const UpdateCatering = async (req, res, next) => {
     }
 
     const updates = req.body || {};
+    // Handle plans/menu which may be sent as JSON strings from form-data
+    if (updates.plans) {
+      existing.plans = Array.isArray(updates.plans) ? updates.plans : JSON.parse(updates.plans);
+      delete updates.plans;
+    }
+    if (updates.menu) {
+      existing.menu = Array.isArray(updates.menu) ? updates.menu : JSON.parse(updates.menu);
+      delete updates.menu;
+    }
+
     Object.keys(updates).forEach((k) => {
       existing[k] = updates[k] ?? existing[k];
     });

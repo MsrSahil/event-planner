@@ -30,6 +30,27 @@ const CateringSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    plans: {
+      type: [
+        {
+          name: { type: String },
+          price: { type: Number },
+          description: { type: String },
+        },
+      ],
+      default: [],
+    },
+    menu: {
+      type: [
+        {
+          name: { type: String },
+          type: { type: String, enum: ["Veg", "Jain", "NonVeg", "Other"], default: "Veg" },
+          price: { type: Number },
+          description: { type: String },
+        },
+      ],
+      default: [],
+    },
     status: {
       type: String,
       required: true,
