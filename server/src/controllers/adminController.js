@@ -5,6 +5,7 @@ import cloudinary from "../config/cloudinary.js";
 import Banquet from "../models/BanquetMondel.js";
 import Booking from "../models/bookingModel.js";
 import User from "../models/userModel.js";
+import Caterer from "../models/CateringModel.js";
 
 
 const UploadMultipleToCloudinary = async (Images) => {
@@ -195,6 +196,84 @@ export const GetAllBookings = async (req, res, next) => {
       .sort({ createdAt: -1 });
 
     res.status(200).json({ message: "All bookings fetched", data: bookings });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const GetAllCatering = async (req, res, next) => {
+  try {
+    const items = await Caterer.find().sort({ createdAt: -1 });
+    res.status(200).json({ message: "Catering list fetched", data: items });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const AddCatering = async (req, res, next) => {
+  try {
+    const {
+      catererName,
+      phone,
+      bookingCharge,
+      perPlateVeg,
+      perPlateJain,
+      perPlateNonVeg,
+      details,
+      status,
+    } = req.body;
+
+    const created = await Caterer.create({
+      catererName,
+      phone,
+      bookingCharge,
+      perPlateVeg,
+      perPlateJain,
+      perPlateNonVeg,
+      details,
+      status: status || "Active",
+    });
+
+    res.status(201).json({ message: "Catering created", data: created });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const UpdateCatering = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const existing = await Caterer.findById(id);
+    if (!existing) {
+      const error = new Error("Catering item not found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    const updates = req.body || {};
+    Object.keys(updates).forEach((k) => {
+      existing[k] = updates[k] ?? existing[k];
+    });
+
+    await existing.save();
+    res.status(200).json({ message: "Catering updated", data: existing });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const DeleteCatering = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const existing = await Caterer.findById(id);
+    if (!existing) {
+      const error = new Error("Catering item not found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    await existing.remove();
+    res.status(200).json({ message: "Catering deleted" });
   } catch (error) {
     next(error);
   }

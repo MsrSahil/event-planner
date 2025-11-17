@@ -4,6 +4,10 @@ import {
   UpdateContacts,
   AddNewBanquetHall,
   GetAllBanquetHalls,
+  GetAllCatering,
+  AddCatering,
+  UpdateCatering,
+  DeleteCatering,
   GetAllBookings,
   UpsertBookingByAdmin,
 } from "../controllers/adminController.js";
@@ -29,6 +33,12 @@ router.get("/banquetHalls", Protect, isAdmin, GetAllBanquetHalls);
 
 // Admin: fetch all bookings
 router.get("/bookings", Protect, isAdmin, GetAllBookings);
+
+// Catering management
+router.get("/catering", Protect, isAdmin, GetAllCatering);
+router.post("/catering", Protect, isAdmin, AddCatering);
+router.put("/catering/:id", Protect, isAdmin, UpdateCatering);
+router.delete("/catering/:id", Protect, isAdmin, DeleteCatering);
 
 // Admin: create or update bookings
 router.post("/bookings", Protect, isAdmin, UpsertBookingByAdmin);
