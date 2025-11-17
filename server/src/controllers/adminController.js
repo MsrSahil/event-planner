@@ -5,6 +5,7 @@ import cloudinary from "../config/cloudinary.js";
 import Banquet from "../models/BanquetMondel.js";
 import Booking from "../models/bookingModel.js";
 import User from "../models/userModel.js";
+import bcrypt from "bcrypt";
 import Caterer from "../models/CateringModel.js";
 
 
@@ -359,6 +360,43 @@ export const DeleteCatering = async (req, res, next) => {
 
     await existing.remove();
     res.status(200).json({ message: "Catering deleted" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const GetAllUsers = async (req, res, next) => {
+  try {
+    const users = await User.find().select("fullName email phone role status photo createdAt").sort({ createdAt: -1 });
+    res.status(200).json({ message: "All users fetched", data: users });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const UpdateUserByAdmin = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const updates = req.body || {};
+
+    // Prevent password updates via this endpoint
+    if (updates.password) delete updates.password;
+
+    const user = await User.findById(id);
+    if (!user) {
+      const error = new Error("User not found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    // Allowed admin updates: role, status, fullName, phone, photo, city, state
+    const allowed = ["role", "status", "fullName", "phone", "photo", "city", "state"];
+    allowed.forEach((k) => {
+      if (updates[k] !== undefined) user[k] = updates[k];
+    });
+
+    await user.save();
+    res.status(200).json({ message: "User updated", data: user });
   } catch (error) {
     next(error);
   }

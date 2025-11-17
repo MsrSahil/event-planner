@@ -8,6 +8,8 @@ import {
   AddCatering,
   UpdateCatering,
   DeleteCatering,
+  GetAllUsers,
+  UpdateUserByAdmin,
   GetAllBookings,
   UpsertBookingByAdmin,
 } from "../controllers/adminController.js";
@@ -39,6 +41,10 @@ router.get("/catering", Protect, isAdmin, GetAllCatering);
 router.post("/catering", Protect, isAdmin, upload.array("photos", 5), AddCatering);
 router.put("/catering/:id", Protect, isAdmin, upload.array("photos", 5), UpdateCatering);
 router.delete("/catering/:id", Protect, isAdmin, DeleteCatering);
+
+// Users management
+router.get("/users", Protect, isAdmin, GetAllUsers);
+router.put("/users/:id", Protect, isAdmin, UpdateUserByAdmin);
 
 // Admin: create or update bookings
 router.post("/bookings", Protect, isAdmin, UpsertBookingByAdmin);
