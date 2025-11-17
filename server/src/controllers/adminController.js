@@ -257,6 +257,16 @@ export const AddCatering = async (req, res, next) => {
       }
     }
 
+    // handle file uploads (photos)
+    let photos = [];
+    if (req.files && req.files.length > 0) {
+      try {
+        photos = await UploadMultipleToCloudinary(req.files);
+      } catch (e) {
+        console.error("Failed to upload catering photos:", e);
+      }
+    }
+
     const created = await Caterer.create({
       catererName,
       phone,
@@ -268,6 +278,7 @@ export const AddCatering = async (req, res, next) => {
       status: status || "Active",
       plans: parsedPlans,
       menu: parsedMenu,
+      photos,
     });
 
     res.status(201).json({ message: "Catering created", data: created });
@@ -313,6 +324,16 @@ export const UpdateCatering = async (req, res, next) => {
         }
       }
       delete updates.menu;
+    }
+
+    // handle new photos uploaded with update (append)
+    if (req.files && req.files.length > 0) {
+      try {
+        const newPhotos = await UploadMultipleToCloudinary(req.files);
+        existing.photos = Array.isArray(existing.photos) ? existing.photos.concat(newPhotos) : newPhotos;
+      } catch (e) {
+        console.error("Failed to upload catering photos on update:", e);
+      }
     }
 
     Object.keys(updates).forEach((k) => {

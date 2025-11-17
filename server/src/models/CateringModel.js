@@ -51,6 +51,10 @@ const CateringSchema = mongoose.Schema(
       ],
       default: [],
     },
+    photos: {
+      type: [String],
+      default: [],
+    },
     status: {
       type: String,
       required: true,

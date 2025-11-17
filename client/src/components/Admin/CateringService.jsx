@@ -63,6 +63,7 @@ const CateringService = () => {
   });
   const [plans, setPlans] = useState([]);
   const [menu, setMenu] = useState([]);
+  const [photos, setPhotos] = useState([]);
 
   const addPlan = () => setPlans((s) => [...s, { name: "", price: "", description: "" }]);
   const updatePlan = (idx, key, value) => setPlans((s) => s.map((p, i) => (i === idx ? { ...p, [key]: value } : p)));
@@ -75,18 +76,26 @@ const CateringService = () => {
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     try {
-      const payload = {
-        ...form,
-        plans: plans.map((p) => ({ name: p.name, price: Number(p.price) || 0, description: p.description })),
-        menu: menu.map((m) => ({ name: m.name, type: m.type, price: Number(m.price) || 0, description: m.description })),
-      };
+      const fd = new FormData();
+      fd.append("catererName", form.catererName);
+      fd.append("phone", form.phone);
+      fd.append("bookingCharge", form.bookingCharge || "");
+      fd.append("perPlateVeg", form.perPlateVeg || "");
+      fd.append("perPlateJain", form.perPlateJain || "");
+      fd.append("perPlateNonVeg", form.perPlateNonVeg || "");
+      fd.append("details", form.details || "");
+      fd.append("status", form.status || "Active");
+      fd.append("plans", JSON.stringify(plans.map((p) => ({ name: p.name, price: Number(p.price) || 0, description: p.description }))));
+      fd.append("menu", JSON.stringify(menu.map((m) => ({ name: m.name, type: m.type, price: Number(m.price) || 0, description: m.description }))));
+      photos.forEach((file) => fd.append("photos", file));
 
-      const { data } = await api.post("/admin/catering", payload);
+      const { data } = await api.post("/admin/catering", fd);
       toast.success(data.message || "Catering created");
       setShowAdd(false);
       setForm({ catererName: "", phone: "", bookingCharge: "", perPlateVeg: "", perPlateJain: "", perPlateNonVeg: "", details: "", status: "Active" });
       setPlans([]);
       setMenu([]);
+      setPhotos([]);
       // refresh list
       fetchItems();
     } catch (err) {
@@ -208,6 +217,12 @@ const CateringService = () => {
                     <input value={m.description} onChange={(e)=>updateMenu(idx,'description',e.target.value)} placeholder="Description" className="mt-2 px-2 py-1 border rounded w-full" />
                   </div>
                 ))}
+              </div>
+
+              <div>
+                <label className="block mb-1 font-medium">Photos</label>
+                <input type="file" multiple accept="image/*" onChange={(e)=>setPhotos(Array.from(e.target.files))} />
+                {photos.length>0 && <div className="text-xs text-gray-600 mt-1">{photos.length} file(s) selected</div>}
               </div>
 
               <div className="flex items-center justify-end gap-2">

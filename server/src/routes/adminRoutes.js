@@ -36,8 +36,8 @@ router.get("/bookings", Protect, isAdmin, GetAllBookings);
 
 // Catering management
 router.get("/catering", Protect, isAdmin, GetAllCatering);
-router.post("/catering", Protect, isAdmin, AddCatering);
-router.put("/catering/:id", Protect, isAdmin, UpdateCatering);
+router.post("/catering", Protect, isAdmin, upload.array("photos", 5), AddCatering);
+router.put("/catering/:id", Protect, isAdmin, upload.array("photos", 5), UpdateCatering);
 router.delete("/catering/:id", Protect, isAdmin, DeleteCatering);
 
 // Admin: create or update bookings
