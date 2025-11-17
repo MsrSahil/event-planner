@@ -4,6 +4,7 @@ import {
   UpdateContacts,
   AddNewBanquetHall,
   GetAllBanquetHalls,
+  GetAllBookings,
   UpsertBookingByAdmin,
 } from "../controllers/adminController.js";
 import { isAdmin, Protect } from "../middlewares/authMiddleware.js";
@@ -25,6 +26,9 @@ router.post(
 );
 
 router.get("/banquetHalls", Protect, isAdmin, GetAllBanquetHalls);
+
+// Admin: fetch all bookings
+router.get("/bookings", Protect, isAdmin, GetAllBookings);
 
 // Admin: create or update bookings
 router.post("/bookings", Protect, isAdmin, UpsertBookingByAdmin);

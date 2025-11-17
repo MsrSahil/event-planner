@@ -187,6 +187,19 @@ export const GetAllBanquetHalls = async (req, res, next) => {
   }
 };
 
+export const GetAllBookings = async (req, res, next) => {
+  try {
+    // Return all bookings for admin view, include basic user info
+    const bookings = await Booking.find()
+      .populate("user", "fullName email")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ message: "All bookings fetched", data: bookings });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const UpsertBookingByAdmin = async (req, res, next) => {
   try {
     const {
