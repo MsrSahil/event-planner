@@ -367,8 +367,28 @@ export const DeleteCatering = async (req, res, next) => {
 
 export const GetAllUsers = async (req, res, next) => {
   try {
-    const users = await User.find().select("fullName email phone role status photo createdAt").sort({ createdAt: -1 });
-    res.status(200).json({ message: "All users fetched", data: users });
+    const page = Number(req.query.page) || 1;
+    const limit = Math.min(Number(req.query.limit) || 10, 100);
+    const q = req.query.q || "";
+
+    const filter = q
+      ? {
+          $or: [
+            { fullName: { $regex: q, $options: "i" } },
+            { email: { $regex: q, $options: "i" } },
+          ],
+        }
+      : {};
+
+    const total = await User.countDocuments(filter);
+    const pages = Math.ceil(total / limit) || 1;
+    const users = await User.find(filter)
+      .select("fullName email phone role status photo createdAt")
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.status(200).json({ message: "All users fetched", data: users, total, page, pages });
   } catch (error) {
     next(error);
   }
